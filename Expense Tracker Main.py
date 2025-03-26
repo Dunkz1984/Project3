@@ -19,51 +19,56 @@ import json
 
 filepath = "Type 3.json"
 
-def add_expense(expense):
-    with open(filepath, "r") as file:
-        data= json.load(file)
-        data.append(expense)
 
+def add_expense(description, amount):
+    with open(filepath, 'r') as file:
+        expenses = json.load(file)
+        if not expenses:
+            new_id = 1
+        else:
+            new_id = expenses[-1]["id"] + 1
+    
+    new_expense = {"id": new_id, "description": description, "amount": amount}
+    expenses.append(new_expense)
 
-def update_expense(expense):
+def delete_expenses(id):
+    with open(filepath, 'r') as file:
+        expenses = json.load(file)
+    updated_expenses = [expenses for y in expenses if y["id"] != id]
+    if len(expenses) == len(updated_expenses):
+        print(f"Cannot delete. ID does not exist.")
+    else:
+        with open(filepath, 'w') as file:
+            json.dump(updated_expenses, file)
+            print(f"Successfully deleted expense with ID {id}.")
 
-def delete_expense(expense):
-
-def view_expenses():
-
-def view_summary():
-
-def view_month_summary(month):
-
-
-
+def list_expenses():
+    
+    
 
 
 def main():
     parser = argparse.ArgumentParser(description="An Expense Tracker")
-    parser.add_argument("-a", "--add", help="Add an expense")
-    parser.add_argument("-u", "--update", help="Update an expense")
-    parser.add_argument("-d", "--delete", help="Delete an expense")
-    parser.add_argument("-v", "--view", help="View all expenses")
-    parser.add_argument("-s", "--summary", help="View a summary of expenses")
-    parser.add_argument("-m", "--month", help="Type the number of the month to get a summary for that month", type=int)
+    parser.add_argument("--description", "-d", help="Description of the expense")
+    parser.add_argument("--amount", "-a", help="Amount of the expense", type=float)
+    parser.add_argument("--id", "-i", help="ID of the expense", type=int)
+    parser.add_argument("--month", "-m", help="Month of the expense")
     
     args = parser.parse_args()
-    
-    if args.add:
-        add_expense(args.add)
-    elif args.update:
-        update_expense(args.update)
-    elif args.delete:
-        delete_expense(args.delete)
-    elif args.view:
-        view_expenses()
-    elif args.summary:
-        view_summary()
-    elif args.month:
-        view_month_summary(args.month)
-    else:
-        print("No arguments provided. Please provide an argument.")
+
+    command = input("Enter a command: ")
+
+    #What I need here are simple commands: add, delete, list, summary.
+    if command.startswith("add"):
+        add_expense(args.description, args.amount)
+    elif command.startswith("delete"):
+        delete_expenses(args.id)
+    elif command.startswith("list"):
+        print("List of expenses")
+        list_expenses()
+
+
+
 
 if __name__ == "__main__":
     main()
