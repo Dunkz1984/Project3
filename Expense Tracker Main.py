@@ -15,7 +15,11 @@
 
 import argparse
 import json
+import os
 # The way too useful but ultimately quite annoying AI features in VSCode have suggested import csv. I have worked with JSON files; csv shouldn't be too different.
+
+import os
+print(os.getcwd())
 
 filepath = "Type 3.json"
 
@@ -29,7 +33,8 @@ def add_expense(description, amount):
             new_id = expenses[-1]["id"] + 1
     
     new_expense = {"id": new_id, "description": description, "amount": amount}
-    expenses.append(new_expense)
+    with open(filepath, 'w') as file:
+        expenses.append(new_expense)
 
 def delete_expenses(id):
     with open(filepath, 'r') as file:
@@ -43,7 +48,14 @@ def delete_expenses(id):
             print(f"Successfully deleted expense with ID {id}.")
 
 def list_expenses():
-    
+    with open(filepath, 'r') as file:
+        expenses = json.load(file)
+    if not expenses:
+        print("No expenses found.")
+    else:
+        for expense in expenses:
+            print(f"ID: {expense['id']}, Description: {expense['description']}, Amount: {expense['amount']}")
+
     
 
 
@@ -58,14 +70,30 @@ def main():
 
     command = input("Enter a command: ")
 
+    
+
     #What I need here are simple commands: add, delete, list, summary.
-    if command.startswith("add"):
-        add_expense(args.description, args.amount)
-    elif command.startswith("delete"):
-        delete_expenses(args.id)
-    elif command.startswith("list"):
-        print("List of expenses")
-        list_expenses()
+    while True:
+        if command.startswith("add"):
+            add_expense(args.description, args.amount)
+        elif command.startswith("delete"):
+            delete_expenses(args.id)
+        elif command.startswith("list"):
+            print("List of expenses:")
+            list_expenses()
+        elif command.startswith("summary"):
+            with open(filepath, 'r') as file:
+                expenses = json.load(file)
+            total = sum(expense["amount"] for expense in expenses)
+            print(f"Total expenses: {total}")
+        elif command.startswith("month"):
+            with open(filepath, 'r') as file:
+                expenses = json.load(file)
+        elif command.startswith("exit"):
+            break
+        else:
+            print("Invalid command. Please try again.")
+
 
 
 
